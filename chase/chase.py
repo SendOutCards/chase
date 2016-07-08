@@ -183,7 +183,7 @@ class Endpoint(object):
         values['CustomerBin'] = self.get_platform_bin()
         for key,value in values.items():
             elem = root.find(".//%s" % key)
-            if elem:
+            if elem is not None:
                 elem.text = value or default_value
                 if elem.text != None:
                     elem.text = remove_control_characters(elem.text)
