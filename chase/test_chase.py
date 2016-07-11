@@ -1,16 +1,10 @@
-import os
 import unittest
+
 from chase import Profile, Order, Reversal
 
-merchant_id = os.environ.get('TEST_MERCHANT_ID')
-username = os.environ.get('TEST_USERNAME')
-password = os.environ.get('TEST_PASSWORD')
 
 def new_profile():
-    profile = Profile(merchant_id=merchant_id, 
-        username=username,
-        password=password
-    )
+    profile = Profile()
     profile.name = "Test User"
     profile.address1 = "101 Main St."
     profile.address2 = "Apt. 4"
@@ -25,17 +19,11 @@ def new_profile():
 
 
 def new_order():
-    return Order(merchant_id=merchant_id, 
-        username=username,
-        password=password
-    )
+    return Order()
 
 
 def new_reversal():
-    return Reversal(merchant_id=merchant_id, 
-        username=username,
-        password=password
-    )
+    return Reversal()
 
 
 class TestProfileFunctions(unittest.TestCase):
@@ -149,5 +137,3 @@ class TestOrderFunctions(unittest.TestCase):
         result = refund.void()
         self.assertEqual(result['ProcStatus'], '0')
 
-if __name__ == '__main__':
-    unittest.main()

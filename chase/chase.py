@@ -81,9 +81,9 @@ class Endpoint(object):
             trace_number
             production
         """
-        self.merchant_id = kwargs['merchant_id']
-        self.username = kwargs['username']
-        self.password = kwargs['password']
+        self.merchant_id = os.getenv('ORBITAL_MERCHANT_ID') or kwargs.get('merchant_id', '')
+        self.username = os.getenv('ORBITAL_USERNAME') or kwargs.get('username', '')
+        self.password = os.getenv('ORBITAL_PASSWORD') or kwargs.get('password', '')
         self.trace_number = kwargs.get('trace_number', str(uuid4().node))
         self.production = kwargs.get('production', False)
         if self.production:
