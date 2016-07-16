@@ -1,7 +1,7 @@
 import unittest
 
+import chase
 from chase import Profile, Order, Reversal
-
 
 def new_profile():
     profile = Profile()
@@ -92,12 +92,13 @@ class TestProfileFunctions(unittest.TestCase):
 class TestOrderFunctions(unittest.TestCase):
 
     def test_profile_order(self):
+        order_id = '300001'
         self.profile = new_profile()
         result = self.profile.create()
         customer_num = result['CustomerRefNum']
         order = new_order()
         order.customer_num = customer_num
-        order.order_id = '100001'
+        order.order_id = order_id
         order.amount = '10.00'
         result = order.charge()
         self.assertEqual(result['ProfileProcStatus'], '0')
@@ -113,8 +114,9 @@ class TestOrderFunctions(unittest.TestCase):
         self.assertEqual(result['ProcStatus'], '0')
 
     def test_cc_order(self):
+        order_id = '200001'
         order = new_order()
-        order.order_id = '100001'
+        order.order_id = order_id
         order.amount = '10.00'
         order.address1 = "101 Main St."
         order.address2 = "Apt. 4"
@@ -133,7 +135,88 @@ class TestOrderFunctions(unittest.TestCase):
         refund = new_reversal()
         refund.tx_ref_num = txRefNum
         refund.tx_ref_idx = txRefIdx
-        refund.order_id = '100001'
+        refund.order_id = order_id
         result = refund.void()
         self.assertEqual(result['ProcStatus'], '0')
 
+
+class TestFailover(unittest.TestCase):
+
+    def setUp(self):
+        chase.TEST_ENDPOINT_URL_1 = 'https://bad-url'
+
+    def test_failover_amex(self):
+        order_id = '400001'
+        order = new_order()
+        order.order_id = order_id
+        order.amount = '105.00'
+        order.address1 = "4 Northeastern Blvd"
+        order.address2 = ""
+        order.city = "Salem"
+        order.state = "NH"
+        order.zipCode = "03195"
+        order.cc_num = "341134113411347"
+        order.ccv = '1234'
+        result = order.charge()
+        txRefNum = result['TxRefNum']
+        txRefIdx = result['TxRefIdx']
+        self.assertTrue(txRefNum)
+        self.assertTrue(txRefIdx)
+        self.assertEqual(result['ProcStatus'], '0')
+
+    def test_failover_discover(self):
+        order_id = '400002'
+        order = new_order()
+        order.order_id = order_id
+        order.amount = '105.00'
+        order.address1 = "4 Northeastern Blvd"
+        order.address2 = ""
+        order.city = "Bedford"
+        order.state = "NH"
+        order.zipCode = "03109"
+        order.cc_num = "6559906559906557"
+        order.ccv = '613'
+        result = order.charge()
+        txRefNum = result['TxRefNum']
+        txRefIdx = result['TxRefIdx']
+        self.assertTrue(txRefNum)
+        self.assertTrue(txRefIdx)
+        self.assertEqual(result['ProcStatus'], '0')
+
+    def test_failover_mastercard(self):
+        order_id = '400003'
+        order = new_order()
+        order.order_id = order_id
+        order.amount = '105.00'
+        order.address1 = "Suite 100"
+        order.address2 = "5 Northeastern Blvd"
+        order.city = "Bedford"
+        order.state = "NH"
+        order.zipCode = "03101"
+        order.cc_num = "5112345112345114"
+        order.ccv = '123'
+        result = order.charge()
+        txRefNum = result['TxRefNum']
+        txRefIdx = result['TxRefIdx']
+        self.assertTrue(txRefNum)
+        self.assertTrue(txRefIdx)
+        self.assertEqual(result['ProcStatus'], '0')
+
+    def test_failover_visa(self):
+        order_id = '400003'
+        order = new_order()
+        order.order_id = order_id
+        order.amount = '105.00'
+        order.address1 = "Apt 2"
+        order.address2 = "1 Northeastern Blvd"
+        order.city = "Bedford"
+        order.state = "NH"
+        order.zipCode = "03109-1234"
+        order.cc_num = "5112345112345114"
+        order.ccv = '411'
+        result = order.charge()
+        txRefNum = result['TxRefNum']
+        txRefIdx = result['TxRefIdx']
+        self.assertTrue(txRefNum)
+        self.assertTrue(txRefIdx)
+        self.assertEqual(result['ProcStatus'], '0')

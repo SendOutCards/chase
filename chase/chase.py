@@ -44,12 +44,14 @@ valid_credit_pattern = re.compile("""
     )$
 """, re.VERBOSE)
 
+
 def remove_control_characters(s):
     """
     Remove unicode characters that will endanger xml parsing on Chase's end
     """
     u = s.decode('unicode-escape')
     return "".join(ch for ch in u if unicodedata.category(ch)[0] != "C")
+
 
 def sanitize_address_field(s):
     """
@@ -58,6 +60,7 @@ def sanitize_address_field(s):
     """
     chars = ["%", "|", "^", "\\", "/"]
     return "".join(ch for ch in s if ch not in chars)
+
 
 def sanitize_phone_field(s):
     """
@@ -70,6 +73,7 @@ def sanitize_phone_field(s):
     """
     chars = ["(", ")", "-", "."]
     return "".join(ch for ch in s if ch not in chars)
+
 
 class Endpoint(object):
     def __init__(self, **kwargs):
@@ -117,27 +121,15 @@ class Endpoint(object):
                            'you can choose `Salem` (Stratus) or `PNS`')
 
     def make_request(self, xml):
-        result = None
         for i in range(3):
-            if result != None and result.text != None:
-                return result.text
             try:
                 result = requests.post(self.url, data=xml, headers=self.headers)
-                if result != None and result.text != None:
-                    return result.text
-            except:
-                pass
-            #sleep for 250 ms
-            sleep(0.25)
-            try:
-                if result == None or result.text == None:
-                    result = requests.post(self.url2, data=xml, headers=self.headers)
-                if result != None and result.text != None:
-                    return result.text
-            except:
-                pass
-            #sleep for 250 ms
-            sleep(0.25)
+                result.raise_for_status()
+            except requests.exceptions.RequestException:
+                result = requests.post(self.url2, data=xml, headers=self.headers)
+            if result and result.text:
+                return result.text
+
         return "Could not communicate with Chase"
 
     def convert_amount(self, amount):
@@ -196,6 +188,7 @@ class Endpoint(object):
         for child_elem in resp_elem:
             values[child_elem.tag] = child_elem.text
         return values
+
 
 class Profile(Endpoint):
     def __init__(self, **kwargs):
@@ -307,6 +300,7 @@ class Profile(Endpoint):
         result = self.make_request(self.xml)
         return self.parse_result(result)
 
+
 class Order(Endpoint):
     """
     MessageType
@@ -321,8 +315,8 @@ class Order(Endpoint):
         self.message_type = kwargs.get('message_type') #<MessageType>
         self.cc_num = kwargs.get('cc_num') #<AccountNum>
         self.cc_expiry = kwargs.get('cc_expiry') #<Exp>
-        self.cvd_indicator = kwargs.get('cvd_indicator') #<CardSecValInd>
-        self.cvd = kwargs.get('cvd') #<CardSecVal>
+        self.cvv_indicator = kwargs.get('cvv_indicator') #<CardSecValInd>
+        self.cvv = kwargs.get('cvv') #<CardSecVal>
         self.customer_num = kwargs.get('customer_num') #<CustomerRefNum>
         self.order_id = kwargs.get('order_id') #<OrderID>
         self.amount = kwargs.get('amount') #<Amount>
@@ -364,10 +358,10 @@ class Order(Endpoint):
         9     Cardholder states data not available
         Null if not Visa/Discover
         """
-        if not self.cvd:
+        if not self.cvv:
             return None
-        if self.cvd_indicator:
-            return self.cvd_indicator
+        if self.cvv_indicator:
+            return self.cvv_indicator
         # Quick check for card type
         if self.card_type(self.cc_num) in ('Visa', 'Discover'):
             if self.cc_expiry and len(self.cc_expiry) > 0:
@@ -384,7 +378,7 @@ class Order(Endpoint):
             'AccountNum': self.cc_num,
             'Exp': self.cc_expiry,
             'CardSecValInd': self.card_sec_val_ind(),
-            'CardSecVal': self.cvd,
+            'CardSecVal': self.cvv,
             'OrderID': self.order_id,
             'Amount': self.convert_amount(self.amount),
             'CustomerRefNum': self.customer_num,
@@ -425,6 +419,7 @@ class Order(Endpoint):
         self.message_type = 'R'
         return self.charge()
 
+
 class MarkForCapture(Endpoint):
     def __init__(self, **kwargs):
         super(MarkForCapture, self).__init__(**kwargs)
@@ -442,6 +437,7 @@ class MarkForCapture(Endpoint):
         xml = self.parse_xml("mark_for_capture.xml", values)
         result = self.make_request(xml)
         return self.parse_result(result)
+
 
 class Reversal(Endpoint):
     def __init__(self, **kwargs):
