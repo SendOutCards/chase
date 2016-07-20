@@ -1,0 +1,7 @@
+test:
+  build: .
+  command: python setup.py test
+  volumes:
+    - .:/code
+  env_file:
+    - .env

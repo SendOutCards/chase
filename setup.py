@@ -27,13 +27,13 @@ tests_require = [
 ]
 
 setup(
-    name='chase',
+    name='orbital_gateway',
     version='1.0.0',
     description='Python Library For Chase Paymentech',
     long_description=long_description,
-    url='https://github.com/dave2328/chase',
-    author='James Maxwell',
-    author_email='james@dxetech.com',
+    url='https://github.com/SendOutCards/chase',
+    author='SendoutCards',
+    author_email='colin@sendoutcards.com',
     license='MIT',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -52,4 +52,3 @@ setup(
     extras_require={},
     package_data={'chase': ['*.xml']},
 )
-

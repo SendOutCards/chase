@@ -5,6 +5,6 @@
     <CustomerBin></CustomerBin>
     <CustomerMerchantID></CustomerMerchantID>
     <CustomerRefNum></CustomerRefNum>
-    <CustomerProfileAction>R</CustomerProfileAction>
+    <CustomerProfileAction></CustomerProfileAction>
   </Profile>
 </Request>

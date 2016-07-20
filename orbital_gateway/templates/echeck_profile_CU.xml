@@ -13,13 +13,15 @@
     <CustomerZIP></CustomerZIP>
     <CustomerEmail></CustomerEmail>
     <CustomerPhone></CustomerPhone>
-    <CustomerCountryCode>US</CustomerCountryCode>
-    <CustomerProfileAction>C</CustomerProfileAction>
-    <CustomerProfileOrderOverrideInd>NO</CustomerProfileOrderOverrideInd>
-    <CustomerProfileFromOrderInd>A</CustomerProfileFromOrderInd>
-    <CustomerAccountType>CC</CustomerAccountType>
+    <CustomerCountryCode></CustomerCountryCode>
+    <CustomerProfileAction></CustomerProfileAction>
+    <CustomerProfileFromOrderInd></CustomerProfileFromOrderInd>
+    <CustomerAccountType>EC</CustomerAccountType>
+    <UseCustomerRefNum></UseCustomerRefNum>
+    <ECPAccountDDA></ECPAccountDDA>
+    <ECPAccountType></ECPAccountType>
+    <ECPAccountRT></ECPAccountRT>
+    <ECPBankPmtDlv></ECPBankPmtDlv>
     <Status>A</Status>
-    <CCAccountNum></CCAccountNum>
-    <CCExpireDate></CCExpireDate>
   </Profile>
 </Request>
