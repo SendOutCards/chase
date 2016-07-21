@@ -13,10 +13,10 @@
     <CustomerZIP></CustomerZIP>
     <CustomerEmail></CustomerEmail>
     <CustomerPhone></CustomerPhone>
-    <CustomerCountryCode>US</CustomerCountryCode>
-    <CustomerProfileAction>U</CustomerProfileAction>
+    <CustomerCountryCode></CustomerCountryCode>
+    <CustomerProfileAction></CustomerProfileAction>
     <CustomerProfileOrderOverrideInd>NO</CustomerProfileOrderOverrideInd>
-    <CustomerProfileFromOrderInd>S</CustomerProfileFromOrderInd>
+    <CustomerProfileFromOrderInd></CustomerProfileFromOrderInd>
     <CustomerAccountType>CC</CustomerAccountType>
     <Status>A</Status>
     <CCAccountNum></CCAccountNum>

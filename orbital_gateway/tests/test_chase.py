@@ -1,7 +1,8 @@
 import unittest
 
-import chase
-from chase import Profile, Order, Reversal
+import orbital_gateway
+from ..orbital_gateway import Order, Profile, Reversal
+
 
 def new_profile():
     profile = Profile()
@@ -46,24 +47,24 @@ class TestProfileFunctions(unittest.TestCase):
         profile = new_profile()
         result = profile.create()
         self.assert_default_fields(result)
-        ident = result['CustomerRefNum']
+        customer_ref_num = result['CustomerRefNum']
 
         # test profile reading
         profile = new_profile()
-        profile.ident = ident
+        profile.customer_ref_num = customer_ref_num
         result = profile.read()
         self.assert_default_fields(result)
 
         # test profile updating
         profile = new_profile()
-        profile.ident = ident
+        profile.customer_ref_num = customer_ref_num
         profile.name = 'Example Customer'
         profile.city = 'Philadelphia'
         profile.state = 'PA'
         profile.zipCode = '19130'
         result = profile.update()
         self.assertEqual(result['ProfileProcStatus'], '0')
-        self.assertEqual(result['CustomerRefNum'], ident)
+        self.assertEqual(result['CustomerRefNum'], customer_ref_num)
         self.assertEqual(result['CustomerName'], 'Example Customer')
         self.assertEqual(result['CustomerCity'], 'Philadelphia')
         self.assertEqual(result['CustomerState'], 'PA')
@@ -83,10 +84,10 @@ class TestProfileFunctions(unittest.TestCase):
 
         # test profile deletion
         profile = new_profile()
-        profile.ident = ident
+        profile.customer_ref_num = customer_ref_num
         result = profile.destroy()
         self.assertEqual(result['ProfileProcStatus'], '0')
-        self.assertEqual(result['CustomerRefNum'], ident)
+        self.assertEqual(result['CustomerRefNum'], customer_ref_num)
 
 
 class TestOrderFunctions(unittest.TestCase):
@@ -143,7 +144,7 @@ class TestOrderFunctions(unittest.TestCase):
 class TestFailover(unittest.TestCase):
 
     def setUp(self):
-        chase.TEST_ENDPOINT_URL_1 = 'https://bad-url'
+        orbital_gateway.TEST_ENDPOINT_URL_1 = 'https://bad-url'
 
     def test_failover_amex(self):
         order_id = '400001'
@@ -212,7 +213,7 @@ class TestFailover(unittest.TestCase):
         order.city = "Bedford"
         order.state = "NH"
         order.zipCode = "03109-1234"
-        order.cc_num = "5112345112345114"
+        order.cc_num = "4112344112344113"
         order.ccv = '411'
         result = order.charge()
         txRefNum = result['TxRefNum']
