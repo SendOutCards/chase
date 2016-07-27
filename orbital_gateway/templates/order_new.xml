@@ -15,12 +15,17 @@
     <CurrencyExponent>2</CurrencyExponent>
     <CardSecValInd/>
     <CardSecVal/>
+    <BCRtNum></BCRtNum>
+    <CheckDDA></CheckDDA>
+    <BankAccountType></BankAccountType>
+    <BankPmtDelv></BankPmtDelv>
     <AVSzip></AVSzip>
     <AVSaddress1></AVSaddress1>
     <AVSaddress2></AVSaddress2>
     <AVScity></AVScity>
     <AVSstate></AVSstate>
     <AVSphoneNum></AVSphoneNum>
+    <AVSname></AVSname>
     <CustomerProfileFromOrderInd/>
     <CustomerRefNum></CustomerRefNum>
     <CustomerProfileOrderOverrideInd/>

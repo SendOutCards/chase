@@ -52,18 +52,19 @@ class Certification(object):
         self.section_g_results = list()
 
         # run tests
-        self.section_a()
-        self.section_b()
-        self.section_c()
-        self.section_d()
-        self.section_e_1()
-        self.section_e_2()
-        self.section_f()
-        self.section_g()
-        self.section_h()
-        self.section_i()
+        #self.section_a()
+        #self.section_b()
+        #self.section_c()
+        #self.section_d()
+        #self.section_e_1()
+        #self.section_e_2()
+        #self.section_f()
+        #self.section_g()
+        #self.section_h()
+        #self.section_i()
         self.section_j()
         self.section_k()
+        self.failover()
 
         # close file
         self.fout.close()
@@ -75,9 +76,7 @@ class Certification(object):
         )
         for line, profile in enumerate(td.TEST_PROFILES, 1):
             oid = self.order_sequence.next()
-            customer_id = self.customer_sequence.next()
             profile['order_id'] = oid
-            profile['customer_ref_num'] = customer_id
             order = orbital_gateway.Order(**profile)
             result = order.authorize()
             formatted_response = format_order_response(result)
@@ -182,23 +181,24 @@ class Certification(object):
         """SECTION E2: Refund Testing using a Credit Card Number"""
         self.fout.write("SECTION E2: Refund Testing using a Credit Card Number\n")
         for line, profile in enumerate(td.TEST_PROFILES, 1):
-            oid = self.order_sequence.next()
-            customer_id = self.customer_sequence.next()
-            profile['order_id'] = oid
-            profile['amount'] = "10.00"
-            profile['customer_ref_num'] = customer_id
-            order = orbital_gateway.Order(**profile)
-            order.authorize()
-            refund = orbital_gateway.Order(**profile)
-            response = refund.refund()
-            formatted_response = format_order_response(response)
-            mop_value = format_mop(order)
-            self.fout.write(
-                "{} MOP: {} Amt: {}, CVV: {} {}\n".format(
-                    line, mop_value, order.amount, order.cvv,
-                    formatted_response
+            if not profile.get('card_type') == "EC":
+                oid = self.order_sequence.next()
+                customer_id = self.customer_sequence.next()
+                profile['order_id'] = oid
+                profile['amount'] = "10.00"
+                profile['customer_ref_num'] = customer_id
+                order = orbital_gateway.Order(**profile)
+                order.authorize()
+                refund = orbital_gateway.Order(**profile)
+                response = refund.refund()
+                formatted_response = format_order_response(response)
+                mop_value = format_mop(order)
+                self.fout.write(
+                    "{} MOP: {} Amt: {}, CVV: {} {}\n".format(
+                        line, mop_value, order.amount, order.cvv,
+                        formatted_response
+                    )
                 )
-            )
 
     def section_f(self):
         """SECTION F: Authorization to Void/Reversal Testing"""
@@ -283,13 +283,13 @@ class Certification(object):
         for line, profile_args in enumerate(td.TEST_PROFILES, 1):
             profile = orbital_gateway.Profile(**profile_args)
             result = profile.create()
-            profile = orbital_gateway.Profile(
-                customer_ref_num=result['CustomerRefNum']
-            )
-            response = profile.destroy()
+            customer_ref_num = result['CustomerRefNum']
+            name = result['CustomerName']
+            profile = orbital_gateway.Profile(customer_ref_num=customer_ref_num)
+            profile.destroy()
             self.fout.write(
                 "{} datetime: {} UTC, CustName: {}, Customer Ref Number {}\n".format(
-                    line, timestamp(), profile.name, response.get('CustomerRefNum')
+                    line, timestamp(), name, customer_ref_num
                 )
             )
 
@@ -321,6 +321,27 @@ class Certification(object):
                     response['StatusMsg'], formatted_response
                 )
             )
+
+    def failover(self):
+        """5.11 Failover Testing Test Cases"""
+        self.fout.write("5.11 Failover Testing Test Cases\n")
+        for line, profile in enumerate(td.TEST_PROFILES, 1):
+            if not profile.get('card_type') == "EC":
+                oid = self.order_sequence.next()
+                profile['order_id'] = oid
+                profile['amount'] = "105.00"
+                profile['url'] = 'https://bad-url'
+                order = orbital_gateway.Order(**profile)
+                result = order.authorize()
+                formatted_response = format_order_response(result)
+                mop_value = format_mop(order)
+                self.fout.write(
+                    "{} MOP: {} Amt: {}, CVV: {} {}\n".format(
+                        line, mop_value, order.amount, order.cvv,
+                        formatted_response
+                    )
+                )
+
 
 if __name__ == '__main__':
     c = Certification()

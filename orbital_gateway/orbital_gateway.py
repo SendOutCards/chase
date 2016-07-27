@@ -45,19 +45,13 @@ class Endpoint(object):
             username
             password
             trace_number
-            production
         """
         self.merchant_id = os.getenv('ORBITAL_MERCHANT_ID') or kwargs.get('merchant_id', '')
         self.username = os.getenv('ORBITAL_USERNAME') or kwargs.get('username', '')
         self.password = os.getenv('ORBITAL_PASSWORD') or kwargs.get('password', '')
         self.trace_number = kwargs.get('trace_number', str(uuid4().node))
-        self.production = kwargs.get('production', False)
-        if self.production:
-            self.url = config.ENDPOINT_URL_1
-            self.url2 = config.ENDPOINT_URL_2
-        else:
-            self.url = config.TEST_ENDPOINT_URL_1
-            self.url2 = config.TEST_ENDPOINT_URL_2
+        self.url = kwargs.get('url') or os.getenv('ENDPOINT_URL_1')
+        self.url2 = kwargs.get('url2') or os.getenv('ENDPOINT_URL_2')
         self.dtd_version = 'application/%s' % config.CURRENT_DTD_VERSION
         self.headers = {
             'MIME-Version': "1.1",
@@ -196,6 +190,13 @@ class Profile(Endpoint):
     def echeck(self):
         return self.card_brand == config.ELECTRONIC_CHECK
 
+    @property
+    def account_type(self):
+        if self.card_type:
+            return config.CREDIT_CARD
+        if self.echeck:
+            return config.ELECTRONIC_CHECK
+
     def sanitize(self):
         if self.name is not None:
             self.name = self.name[:30]
@@ -242,6 +243,7 @@ class Profile(Endpoint):
             'CustomerZIP': self.zipCode,
             'CustomerEmail': self.email,
             'CustomerPhone': self.phone,
+            'CustomerAccountType': self.account_type,
         }
         if self.customer_ref_num:
             values['CustomerProfileFromOrderInd'] = 'S'
@@ -249,18 +251,15 @@ class Profile(Endpoint):
         if not self.echeck:
             values['CCAccountNum'] = self.cc_num
             values['CCExpireDate'] = self.cc_expiry
-            template = "profile_CU.xml"
         else:
             # add echeck specific fields here
-            values['UseCustomerRefNum'] = self.customer_ref_num
             values['ECPAccountDDA'] = self.ecp_dda_number
             values['ECPAccountType'] = self.bank_account_type
             values['ECPAccountRT'] = self.routing_number
             values['ECPBankPmtDlv'] = self.ecp_delivery_method
-            template = "echeck_profile_CU.xml"
 
         self.xml = self.parse_xml(
-            template, values, default_value=""
+            "profile_CU.xml", values, default_value=""
         )
         self.result = self.make_request(self.xml)
         return self.parse_result(self.result)
@@ -293,6 +292,7 @@ class Profile(Endpoint):
             'CustomerPhone': self.phone,
             'CCAccountNum': self.cc_num,
             'CCExpireDate': self.cc_expiry,
+            'CustomerAccountType': self.account_type,
         }
         self.xml = self.parse_xml("profile_CU.xml", values)
         result = self.make_request(self.xml)
@@ -410,28 +410,25 @@ class Order(Endpoint):
             'AVSphoneNum': self.phone,
             'PriorAuthID': self.prior_auth_id,
             'TxRefNum': self.tx_ref_num,
+            'CustomerRefNum': self.customer_num,
         }
         if not self.echeck:
             # CREDIT CARD FIELDS
-            template = "order_new.xml"
             cvvi = self.card_sec_val_ind()
             cvv = self.cvv if cvvi == '1' else None
-            values['CustomerRefNum'] = self.customer_num
             values['Exp'] = self.cc_expiry
             values['CardSecValInd'] = cvvi
             values['CardSecVal'] = cvv
         else:
             # ECHECK FIELDS
-            template = "echeck_order_new.xml"
             values['AVSname'] = self.avs_name
             values['CardBrand'] = self.card_brand
             values['BCRtNum'] = self.routing_number
             values['CheckDDA'] = self.check_account_number
             values['BankPmtDelv'] = self.ecp_delivery_method
             values['BankAccountType'] = self.bank_account_type
-            values['UseCustomerRefNum'] = self.customer_ref_num
 
-        if self.new_customer and not self.echeck:
+        if self.new_customer:
             values['CustomerProfileFromOrderInd'] = "A"
             values['CustomerProfileOrderOverrideInd'] = "NO"
 
@@ -439,7 +436,7 @@ class Order(Endpoint):
         if self.message_type not in config.MESSAGE_TYPES:
             pass
 
-        xml = self.parse_xml(template, values)
+        xml = self.parse_xml('order_new.xml', values)
         result = self.make_request(xml)
         return self.parse_result(result)
 

@@ -26,7 +26,7 @@ DISCOVER_LOOKUP = {
 
 
 ECHECK_LOOKUP = {
-    'name': "Randall Wiggens",
+    'name': "Test Echeck",
     'address1': "Lesley Lou LaFrance",
     'address2': "Byway Street",
     'city': "Portsmouth",
@@ -36,7 +36,6 @@ ECHECK_LOOKUP = {
     'routing_number': "122000247",
     'check_account_number': "0888271156",
     'amount': "0.00",
-    'new_customer': True,
 }
 
 
@@ -82,7 +81,7 @@ VISA_LOOKUP = {
 TEST_PROFILES = [
     AMEX_LOOKUP,
     DISCOVER_LOOKUP,
-    #ECHECK_LOOKUP,
+    ECHECK_LOOKUP,
     JCB_LOOKUP,
     MASTERCARD_LOOKUP,
     VISA_LOOKUP,
