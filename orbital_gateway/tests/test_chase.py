@@ -1,6 +1,5 @@
 import unittest
 
-import orbital_gateway
 from ..orbital_gateway import Order, Profile, Reversal
 
 
@@ -142,14 +141,11 @@ class TestOrderFunctions(unittest.TestCase):
 
 
 class TestFailover(unittest.TestCase):
-
-    def setUp(self):
-        orbital_gateway.TEST_ENDPOINT_URL_1 = 'https://bad-url'
-
     def test_failover_amex(self):
         order_id = '400001'
         order = new_order()
         order.order_id = order_id
+        order.url = 'https://bad-url'
         order.amount = '105.00'
         order.address1 = "4 Northeastern Blvd"
         order.address2 = ""
@@ -168,6 +164,7 @@ class TestFailover(unittest.TestCase):
     def test_failover_discover(self):
         order_id = '400002'
         order = new_order()
+        order.url = 'https://bad-url'
         order.order_id = order_id
         order.amount = '105.00'
         order.address1 = "4 Northeastern Blvd"
@@ -187,6 +184,7 @@ class TestFailover(unittest.TestCase):
     def test_failover_mastercard(self):
         order_id = '400003'
         order = new_order()
+        order.url = 'https://bad-url'
         order.order_id = order_id
         order.amount = '105.00'
         order.address1 = "Suite 100"
@@ -208,6 +206,7 @@ class TestFailover(unittest.TestCase):
         order = new_order()
         order.order_id = order_id
         order.amount = '105.00'
+        order.url = 'https://bad-url'
         order.address1 = "Apt 2"
         order.address2 = "1 Northeastern Blvd"
         order.city = "Bedford"

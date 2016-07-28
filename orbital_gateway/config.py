@@ -1,6 +1,7 @@
 PROCSTATUS_INVALID_RETRY_TRACE = '9714'
 PROCSTATUS_USER_NOT_FOUND = '9581'
 
+CREDIT_CARD = 'CC'
 ELECTRONIC_CHECK = 'EC'
 
 CONSUMER_CHECKING = 'C'  # (US or Canadian)
@@ -56,10 +57,6 @@ DELETE_CUSTOMER = 'D'
 AUTO_GENERATE = 'A'
 USE_CUSTOMERREF = 'S'
 
-TEST_ENDPOINT_URL_1 = "https://orbitalvar1.chasepaymentech.com/authorize"
-TEST_ENDPOINT_URL_2 = "https://orbitalvar2.chasepaymentech.com/authorize"
-ENDPOINT_URL_1 = "https://orbital1.chasepaymentech.com/authorize"
-ENDPOINT_URL_2 = "https://orbital2.chasepaymentech.com/authorize"
 
 CURRENT_DTD_VERSION = "PTI68"
 

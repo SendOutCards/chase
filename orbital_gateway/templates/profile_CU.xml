@@ -17,9 +17,13 @@
     <CustomerProfileAction></CustomerProfileAction>
     <CustomerProfileOrderOverrideInd>NO</CustomerProfileOrderOverrideInd>
     <CustomerProfileFromOrderInd></CustomerProfileFromOrderInd>
-    <CustomerAccountType>CC</CustomerAccountType>
+    <CustomerAccountType></CustomerAccountType>
     <Status>A</Status>
     <CCAccountNum></CCAccountNum>
     <CCExpireDate></CCExpireDate>
+    <ECPAccountDDA></ECPAccountDDA>
+    <ECPAccountType></ECPAccountType>
+    <ECPAccountRT></ECPAccountRT>
+    <ECPBankPmtDlv></ECPBankPmtDlv>
   </Profile>
 </Request>
