@@ -1,17 +1,18 @@
 import os
+import requests
+import six
+import unicodedata
 from uuid import uuid4
 import xml.etree.ElementTree as ET
-import requests
-import unicodedata
 
-import config
+from . import config
 
 
 def remove_control_characters(s):
     """
     Remove unicode characters that will endanger xml parsing on Chase's end
     """
-    u = s.decode('unicode-escape')
+    u = six.text_type(s)
     return "".join(ch for ch in u if unicodedata.category(ch)[0] != "C")
 
 
