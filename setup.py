@@ -10,18 +10,19 @@ if 'test' in sys.argv:
 
 install_requires = [
     'requests>=2.0',
+    'six',
 ]
 
 tests_require = [
     'pytest',
     'responses',
     'coverage >= 3.7.1, < 5.0.0',
-    'pytest-cov',
+    'vcrpy',
 ]
 
 setup(
     name='orbital_gateway',
-    version='1.0.0',
+    version='1.0.1',
     description='Python Library For Chase Paymentech',
     url='https://github.com/SendOutCards/chase',
     author='SendoutCards',
@@ -32,9 +33,8 @@ setup(
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Web APIs',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.5',
     ],
     packages=find_packages(exclude=['*.tests']),
     keywords='payment',
