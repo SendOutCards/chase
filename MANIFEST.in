@@ -1,0 +1,1 @@
+recursive-include orbital_gateway/templates *.xml
