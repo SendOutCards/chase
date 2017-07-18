@@ -42,5 +42,5 @@ setup(
     tests_require=tests_require,
     setup_requires=setup_requires,
     extras_require={},
-    package_data={'orbital_gateway': ['*.xml']},
+    package_data={'orbital_gateway': ['templates/*.xml']},
 )
