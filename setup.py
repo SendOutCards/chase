@@ -22,7 +22,7 @@ tests_require = [
 
 setup(
     name='orbital_gateway',
-    version='1.0.1',
+    version='1.0.2',
     description='Python Library For Chase Paymentech',
     url='https://github.com/SendOutCards/chase',
     author='SendoutCards',
@@ -42,5 +42,5 @@ setup(
     tests_require=tests_require,
     setup_requires=setup_requires,
     extras_require={},
-    package_data={'chase': ['*.xml']},
+    package_data={'orbital_gateway': ['*.xml']},
 )
